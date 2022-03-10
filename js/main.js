@@ -1,5 +1,4 @@
-// Возвращает случайное целое число из переданного диапазона включительно
-
+/**  Возвращает случайное целое число из переданного диапазона включительно */
 function getRandomIntInclusive(min, max) {
   if (!Number.isInteger(min) || !Number.isInteger(max)) {
     throw new Error('Диапазон должен содержать только целые числа');
@@ -10,17 +9,12 @@ function getRandomIntInclusive(min, max) {
   if (min < 0) {
     throw new Error('Диапазон не может быть отрицательным');
   }
-  /*
-  Источник:
-  https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/random
-  */
+  // Источник:
+  // https://developer.mozilla.org/ru/docs/Web/JavaScript/Reference/Global_Objects/Math/random
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-getRandomIntInclusive(0, 5);
-
-// Проверка максимальной длины строки
-
+/** Проверка максимальной длины строки */
 function checkCommentLength(comment, MAX_LENGTH) {
   return comment.length <= MAX_LENGTH;
 }
@@ -57,19 +51,14 @@ const NAMES = [
   'Аркадий'
 ];
 
-// Создаёт комментарии
+let commentNumber = 1;
 
+/**  Создаёт комментарии */
 const createComments = (number) => {
   const comments = [];
-  const comm = [];
-  for (let j = 0; j < number; j++) {
-    comm[j] = {
-      id: (j + 1),
-    };
-  }
-  for (let i = 0; i < comm.length; i++) {
+  for (let i = 0; i < number; i++) {
     const comment = {
-      id: comm[i].id,
+      id: commentNumber++,
       avatar: `img/avatar-${  getRandomIntInclusive(1, 6)  }.svg`,
       message: MESSAGES[getRandomIntInclusive(0, MESSAGES.length - 1)],
       name: NAMES[getRandomIntInclusive(0, NAMES.length - 1)]
@@ -79,13 +68,12 @@ const createComments = (number) => {
   return comments;
 };
 
-// Создаёт описание фотографии
-
-const createPhoto = () => {
+/**  Создаёт описание фотографии */
+const createPhoto = (number) => {
   const photo = [];
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < number; i++) {
     photo[i] = {
-      id: (i + 1),
+      id: i + 1,
       url: `photos/${  i + 1  }.jpg`,
       description: DESCRIPTIONS[getRandomIntInclusive(0, DESCRIPTIONS.length - 1)],
       likes: getRandomIntInclusive(15, 200),
@@ -95,4 +83,5 @@ const createPhoto = () => {
   return photo;
 };
 
-const similarPhotos = Array.from({length:25}, createPhoto);
+// eslint-disable-next-line no-console
+console.log(createPhoto(25));
