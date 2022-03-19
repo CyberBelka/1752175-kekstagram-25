@@ -19,6 +19,4 @@ function checkCommentLength(comment, MAX_LENGTH) {
   return comment.length <= MAX_LENGTH;
 }
 
-checkCommentLength('Some comment', 140);
-
-export {getRandomIntInclusive};
+export {getRandomIntInclusive, checkCommentLength};
