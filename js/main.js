@@ -1,13 +1,10 @@
 import {createPhotos} from './data.js';
-import {checkCommentLength} from './util.js';
-import './picture.js';
+import {renderPhotos} from './picture.js';
+import {showBigPicture} from './big-picture.js';
 
-// eslint-disable-next-line no-console
-console.log(
-  createPhotos(25)
-);
+// Генерируем случайные фото
+const similarPhotos = createPhotos(25);
+// Рендер фото
+renderPhotos(showBigPicture);
 
-// eslint-disable-next-line no-console
-console.log(
-  checkCommentLength('Some comment', 140)
-);
+export {similarPhotos};

@@ -15,8 +15,11 @@ const getRandomIntInclusive = (min, max) => {
 };
 
 /** Проверка максимальной длины строки */
+/* eslint-disable no-console, no-unused-vars */
 function checkCommentLength(comment, MAX_LENGTH) {
   return comment.length <= MAX_LENGTH;
 }
 
-export {getRandomIntInclusive, checkCommentLength};
+const isEscapeKey = (evt) => evt.key === 'Escape';
+
+export {getRandomIntInclusive, isEscapeKey};
