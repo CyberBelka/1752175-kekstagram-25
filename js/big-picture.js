@@ -1,15 +1,28 @@
 import {isEscapeKey} from './util.js';
 
-const body = document.querySelector('body');
 const bigPicture = document.querySelector('.big-picture');
 const commentsCount = bigPicture.querySelector('.social__comment-count');
 const commentsLoader = bigPicture.querySelector('.comments-loader');
 const userModalCloseElement = bigPicture.querySelector('.big-picture__cancel');
+const commentsContainer = bigPicture.querySelector('.social__comments');
+const commentTemplate = commentsContainer.querySelector('.social__comment');
+const COMMENTS_STEP = 5;
+
+let sourceComments = [];
+let renderedCommentsNumber = 0;
 
 /**
  * Рендер комментариев в модальном окне
  */
 const renderPictureComments = (comments, container, template) => {
+  commentsLoader.classList.remove('hidden');
+  if (sourceComments.length <= COMMENTS_STEP) {
+    commentsLoader.classList.add('hidden');
+  }
+  commentsCount.innerHTML = `${COMMENTS_STEP} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
+  if (sourceComments.length <= COMMENTS_STEP){
+    commentsCount.innerHTML = `${sourceComments.length} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
+  }
   container.textContent = '';
   comments.forEach((comment) => {
     const commentNode = template.cloneNode(true);
@@ -27,31 +40,47 @@ const renderPictureComments = (comments, container, template) => {
 const showBigPicture = (photo) => {
   // открытие модального окна
   bigPicture.classList.remove('hidden');
-  body.classList.add('modal-open');
-  commentsCount.classList.add('hidden');
-  commentsLoader.classList.add('hidden');
+  document.body.classList.add('modal-open');
+  // commentsCount.classList.add('hidden');
+  // commentsLoader.classList.add('hidden');
   // заполнение модального окна данными
   bigPicture.querySelector('img').src = photo.url;
   bigPicture.querySelector('.likes-count').textContent = photo.likes;
   bigPicture.querySelector('.comments-count').textContent = photo.comments.length;
   bigPicture.querySelector('.social__caption').textContent = photo.description;
-  // render comments
-  const commentsContainer = bigPicture.querySelector('.social__comments');
-  const commentTemplate = commentsContainer.querySelector('.social__comment');
-  renderPictureComments(photo.comments, commentsContainer, commentTemplate);
+  // render comment
+  sourceComments = photo.comments;
+  const partComments = sourceComments.slice(0, 5);
+  renderPictureComments(partComments, commentsContainer, commentTemplate);
+  renderedCommentsNumber = partComments.length;
 };
 
-userModalCloseElement.addEventListener('click', () => {
-  bigPicture.classList.add('hidden');
-  body.classList.remove('modal-open');
-});
-
-document.addEventListener('keydown', (evt) => {
-  if (isEscapeKey(evt)) {
-    evt.preventDefault();
+const initBigPicture = () => {
+  // Oбработчик для кнопки Загрузить ещё
+  commentsLoader.addEventListener('click', () => {
+    const count = renderedCommentsNumber + COMMENTS_STEP;
+    const newPartComments = sourceComments.slice(0, count);
+    renderPictureComments(newPartComments, commentsContainer, commentTemplate);
+    renderedCommentsNumber = renderedCommentsNumber + COMMENTS_STEP;
+    commentsCount.innerHTML = `${newPartComments.length} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
+    if(sourceComments.length <= COMMENTS_STEP || renderedCommentsNumber === sourceComments.length){
+      commentsLoader.classList.add('hidden');
+    }
+    if (newPartComments.length >= sourceComments.length) {
+      commentsLoader.classList.add('hidden');
+    }
+  });
+  userModalCloseElement.addEventListener('click', () => {
     bigPicture.classList.add('hidden');
-    body.classList.remove('modal-open');
-  }
-});
+    document.body.classList.remove('modal-open');
+  });
+  document.addEventListener('keydown', (evt) => {
+    if (isEscapeKey(evt)) {
+      evt.preventDefault();
+      bigPicture.classList.add('hidden');
+      document.body.classList.remove('modal-open');
+    }
+  });
+};
 
-export {showBigPicture};
+export {showBigPicture, initBigPicture};
