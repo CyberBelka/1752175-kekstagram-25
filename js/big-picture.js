@@ -19,10 +19,9 @@ const renderPictureComments = (comments, container, template) => {
   if (sourceComments.length <= COMMENTS_STEP) {
     commentsLoader.classList.add('hidden');
   }
-  commentsCount.innerHTML = `${COMMENTS_STEP} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
-  if (sourceComments.length <= COMMENTS_STEP){
-    commentsCount.innerHTML = `${sourceComments.length} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
-  }
+  commentsCount.innerHTML = sourceComments.length <= COMMENTS_STEP
+    ? `${sourceComments.length} из <span class="comments-count">${sourceComments.length}</span> комментариев`
+    : `${COMMENTS_STEP} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
   container.textContent = '';
   comments.forEach((comment) => {
     const commentNode = template.cloneNode(true);
@@ -38,42 +37,41 @@ const renderPictureComments = (comments, container, template) => {
  * Открытие и заполнение модального окна
  */
 const showBigPicture = (photo) => {
-  // открытие модального окна
   bigPicture.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  // commentsCount.classList.add('hidden');
-  // commentsLoader.classList.add('hidden');
-  // заполнение модального окна данными
+
   bigPicture.querySelector('img').src = photo.url;
   bigPicture.querySelector('.likes-count').textContent = photo.likes;
   bigPicture.querySelector('.comments-count').textContent = photo.comments.length;
   bigPicture.querySelector('.social__caption').textContent = photo.description;
-  // render comment
+
   sourceComments = photo.comments;
-  const partComments = sourceComments.slice(0, 5);
+  const partComments = sourceComments.slice(0, COMMENTS_STEP);
   renderPictureComments(partComments, commentsContainer, commentTemplate);
   renderedCommentsNumber = partComments.length;
 };
 
 const initBigPicture = () => {
-  // Oбработчик для кнопки Загрузить ещё
   commentsLoader.addEventListener('click', () => {
     const count = renderedCommentsNumber + COMMENTS_STEP;
     const newPartComments = sourceComments.slice(0, count);
     renderPictureComments(newPartComments, commentsContainer, commentTemplate);
     renderedCommentsNumber = renderedCommentsNumber + COMMENTS_STEP;
     commentsCount.innerHTML = `${newPartComments.length} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
-    if(sourceComments.length <= COMMENTS_STEP || renderedCommentsNumber === sourceComments.length){
-      commentsLoader.classList.add('hidden');
-    }
-    if (newPartComments.length >= sourceComments.length) {
+    if (
+      sourceComments.length <= COMMENTS_STEP
+      || renderedCommentsNumber === sourceComments.length
+      || newPartComments.length >= sourceComments.length
+    ) {
       commentsLoader.classList.add('hidden');
     }
   });
+
   userModalCloseElement.addEventListener('click', () => {
     bigPicture.classList.add('hidden');
     document.body.classList.remove('modal-open');
   });
+
   document.addEventListener('keydown', (evt) => {
     if (isEscapeKey(evt)) {
       evt.preventDefault();

@@ -1,4 +1,5 @@
 import {isEscapeKey} from './util.js';
+import {scaleControlValue} from './scale.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadOverlay = uploadForm.querySelector('.img-upload__overlay');
@@ -20,6 +21,7 @@ const uploadFormEscKeydownHandler = (evt) => {
 const openUploadForm = () => {
   uploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
+  scaleControlValue.value = '100%';
 
   document.addEventListener('keydown', uploadFormEscKeydownHandler);
 };

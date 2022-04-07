@@ -2,14 +2,17 @@ import {createPhotos} from './data.js';
 import {renderPhotos} from './picture.js';
 import {showBigPicture, initBigPicture} from './big-picture.js';
 import {initPhotoUPload} from './form.js';
+import {initScale} from './scale.js';
+import { initSlider } from './effects.js';
 
-// Генерируем случайные фото
 const similarPhotos = createPhotos(25);
-// Рендер фото
-renderPhotos(showBigPicture);
+
+renderPhotos(similarPhotos, showBigPicture);
 
 initPhotoUPload();
 
 initBigPicture();
 
-export {similarPhotos};
+initScale();
+
+initSlider();
