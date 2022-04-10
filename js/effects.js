@@ -7,17 +7,7 @@ const imgUploadEffects = document.querySelector('.img-upload__effects');
 
 let currentEffect;
 
-noUiSlider.create(slider, {
-  range: {
-    min: 0,
-    max: 100,
-  },
-  start: 100,
-  step: 1,
-  connect: 'lower',
-});
-
-const hideSlider = () => {
+const switchSlider = () => {
   if (currentEffect === 'none') {
     sliderContainer.classList.add('hidden');
   } else {
@@ -26,77 +16,95 @@ const hideSlider = () => {
 };
 
 const changeEffect = (evt) => {
+  imgUploadPreview.classList.remove(`effects__preview--${currentEffect}`);
   currentEffect = evt.target.value;
   imgUploadPreview.classList.add(`effects__preview--${currentEffect}`);
-  hideSlider();
-  if (currentEffect === 'none' || currentEffect === 'chrome' || currentEffect === 'sepia') {
-    slider.noUiSlider.updateOptions({
-      range: {
-        min: 0,
-        max: 1,
-      },
-      start: 1,
-      step: 0.1,
-    });
-  }
-  if (currentEffect === 'marvin') {
-    slider.noUiSlider.updateOptions({
-      range: {
-        min: 0,
-        max: 100,
-      },
-      start: 100,
-      step: 1,
-    });
-  }
-  if (currentEffect === 'phobos') {
-    slider.noUiSlider.updateOptions({
-      range: {
-        min: 0,
-        max: 3,
-      },
-      start: 3,
-      step: 0.1,
-    });
-  }
-  if (currentEffect === 'heat') {
-    slider.noUiSlider.updateOptions({
-      range: {
-        min: 1,
-        max: 3,
-      },
-      start: 3,
-      step: 0.1,
-    });
+  switchSlider();
+  switch (currentEffect) {
+    case 'none':
+    case 'chrome':
+    case 'sepia':
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 1,
+        },
+        start: 1,
+        step: 0.1,
+      });
+      break;
+    case 'marvin':
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 100,
+        },
+        start: 100,
+        step: 1,
+      });
+      break;
+    case 'phobos':
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 0,
+          max: 3,
+        },
+        start: 3,
+        step: 0.1,
+      });
+      break;
+    case 'heat':
+      slider.noUiSlider.updateOptions({
+        range: {
+          min: 1,
+          max: 3,
+        },
+        start: 3,
+        step: 0.1,
+      });
+      break;
   }
 };
 
-slider.noUiSlider.on('update', () => {
-  effectLevel.value = slider.noUiSlider.get();
-  if (currentEffect === 'none') {
-    imgUploadPreview.style.filter = 'none';
-  }
-  if (currentEffect === 'chrome') {
-    imgUploadPreview.style.filter = `grayscale(${effectLevel.value})`;
-  }
-  if (currentEffect === 'sepia') {
-    imgUploadPreview.style.filter = `sepia(${effectLevel.value})`;
-  }
-  if (currentEffect === 'marvin') {
-    imgUploadPreview.style.filter = `invert(${effectLevel.value}%)`;
-  }
-  if (currentEffect === 'phobos') {
-    imgUploadPreview.style.filter = `blur(${effectLevel.value}px)`;
-  }
-  if (currentEffect === 'heat') {
-    imgUploadPreview.style.filter = `brightness(${effectLevel.value})`;
-  }
-});
-
 const initSlider = () => {
-  currentEffect = 'none';
-  hideSlider();
+  noUiSlider.create(slider, {
+    range: {
+      min: 0,
+      max: 100,
+    },
+    start: 100,
+    step: 1,
+    connect: 'lower',
+  });
+
   imgUploadEffects.addEventListener('click', changeEffect);
+  slider.noUiSlider.on('update', () => {
+    effectLevel.value = slider.noUiSlider.get();
+    switch (currentEffect) {
+      case 'none':
+        imgUploadPreview.style.filter = 'none';
+        break;
+      case 'chrome':
+        imgUploadPreview.style.filter = `grayscale(${effectLevel.value})`;
+        break;
+      case 'sepia':
+        imgUploadPreview.style.filter = `sepia(${effectLevel.value})`;
+        break;
+      case 'marvin':
+        imgUploadPreview.style.filter = `invert(${effectLevel.value}%)`;
+        break;
+      case 'phobos':
+        imgUploadPreview.style.filter = `blur(${effectLevel.value}px)`;
+        break;
+      case 'heat':
+        imgUploadPreview.style.filter = `brightness(${effectLevel.value})`;
+        break;
+    }
+  });
+
+  currentEffect = 'none';
+
+  switchSlider();
 };
 
 export {initSlider};

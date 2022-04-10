@@ -9,7 +9,7 @@ const setScale = (value) => {
   imgUploadPreview.style.transform = `scale(${scale})`;
 };
 
-const scaleSmaller = () => {
+const buttonSmallerClickHahdler = () => {
   const newScale = parseInt(scaleControlValue.value, 10) - SCALE_STEP;
   if (newScale >= 25 ) {
     setScale(newScale);
@@ -17,7 +17,7 @@ const scaleSmaller = () => {
   }
 };
 
-const scaleBigger = () => {
+const buttonBiggerClickHahdler = () => {
   const newScale = parseInt(scaleControlValue.value, 10) + SCALE_STEP;
   if (newScale <= 100) {
     setScale(newScale);
@@ -26,8 +26,8 @@ const scaleBigger = () => {
 };
 
 const initScale = () => {
-  scaleControlSmaller.addEventListener('click', scaleSmaller);
-  scaleControlBigger.addEventListener('click', scaleBigger);
+  scaleControlSmaller.addEventListener('click', buttonSmallerClickHahdler);
+  scaleControlBigger.addEventListener('click', buttonBiggerClickHahdler);
 };
 
 export {scaleControlValue, initScale};

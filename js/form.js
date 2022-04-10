@@ -1,5 +1,7 @@
 import {isEscapeKey} from './util.js';
 import {scaleControlValue} from './scale.js';
+import {sendData} from './api.js';
+import {blockSubmitButton, unblockSubmitButton, successSubmit, errorSubmit} from './form-submit.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadOverlay = uploadForm.querySelector('.img-upload__overlay');
@@ -67,11 +69,29 @@ pristine.addValidator(textHashtags, () => {
 
 pristine.addValidator(textDescription, () => textDescription.value.length <= 140, 'Не более 140 символов');
 
-uploadForm.addEventListener('submit', (evt) => {
-  if (!pristine.validate()) {
+const setUserFormSubmit = (onSuccess) => {
+  uploadForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
-  }
-});
+
+    const isValid = pristine.validate();
+    if (isValid) {
+      blockSubmitButton();
+      sendData(
+        () => {
+          onSuccess();
+          unblockSubmitButton();
+          successSubmit();
+        },
+        () => {
+          closeUploadForm();
+          unblockSubmitButton();
+          errorSubmit();
+        },
+        new FormData(evt.target),
+      );
+    }
+  });
+};
 
 const initPhotoUPload = () => {
   uploadInput.addEventListener('change', () => {
@@ -82,4 +102,4 @@ const initPhotoUPload = () => {
   });
 };
 
-export {initPhotoUPload};
+export {initPhotoUPload, setUserFormSubmit, closeUploadForm};
