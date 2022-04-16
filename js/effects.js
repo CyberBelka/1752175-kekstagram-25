@@ -1,8 +1,7 @@
 const sliderContainer = document.querySelector('.img-upload__effect-level');
 const slider = sliderContainer.querySelector('.effect-level__slider');
 const effectLevel = sliderContainer.querySelector('.effect-level__value');
-const uploadPreview = document.querySelector('.img-upload__preview');
-const imgUploadPreview = uploadPreview.querySelector('img');
+const imgUploadPreview = document.querySelector('.img-upload__preview img');
 const imgUploadEffects = document.querySelector('.img-upload__effects');
 
 let currentEffect;

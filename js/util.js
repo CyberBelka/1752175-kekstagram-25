@@ -46,4 +46,14 @@ const showAlert = (message) => {
   }, ALERT_SHOW_TIME);
 };
 
-export {getRandomIntInclusive, isEscapeKey, showAlert};
+const debounce = (callback, timeoutDelay) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), timeoutDelay);
+  };
+};
+
+const focused = (element) => element !== document.activeElement;
+
+export {getRandomIntInclusive, isEscapeKey, showAlert, debounce, focused};

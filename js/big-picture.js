@@ -3,7 +3,7 @@ import {isEscapeKey} from './util.js';
 const bigPicture = document.querySelector('.big-picture');
 const commentsCount = bigPicture.querySelector('.social__comment-count');
 const commentsLoader = bigPicture.querySelector('.comments-loader');
-const userModalCloseElement = bigPicture.querySelector('.big-picture__cancel');
+const bigPictureCloseButton = bigPicture.querySelector('.big-picture__cancel');
 const commentsContainer = bigPicture.querySelector('.social__comments');
 const commentTemplate = commentsContainer.querySelector('.social__comment');
 const COMMENTS_STEP = 5;
@@ -33,6 +33,30 @@ const renderPictureComments = (comments, container, template) => {
   });
 };
 
+const loadCommentsButtonClickHandler = () => {
+  const count = renderedCommentsNumber + COMMENTS_STEP;
+  const newPartComments = sourceComments.slice(0, count);
+  renderPictureComments(newPartComments, commentsContainer, commentTemplate);
+  renderedCommentsNumber = renderedCommentsNumber + COMMENTS_STEP;
+  commentsCount.innerHTML = `${newPartComments.length} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
+  if (
+    sourceComments.length <= COMMENTS_STEP
+    || renderedCommentsNumber === sourceComments.length
+    || newPartComments.length >= sourceComments.length
+  ) {
+    commentsLoader.classList.add('hidden');
+  }
+};
+
+const bigPictureClickHandler = () => {
+  bigPicture.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+
+  bigPictureCloseButton.removeEventListener('click', bigPictureClickHandler);
+  document.removeEventListener('keydown', bigPictureEscKeydownHandler);
+  commentsLoader.removeEventListener('click', loadCommentsButtonClickHandler);
+};
+
 /**
  * Открытие и заполнение модального окна
  */
@@ -49,36 +73,19 @@ const showBigPicture = (photo) => {
   const partComments = sourceComments.slice(0, COMMENTS_STEP);
   renderPictureComments(partComments, commentsContainer, commentTemplate);
   renderedCommentsNumber = partComments.length;
+
+  commentsLoader.addEventListener('click', loadCommentsButtonClickHandler);
+
+  bigPictureCloseButton.addEventListener('click', bigPictureClickHandler);
+
+  document.addEventListener('keydown', bigPictureEscKeydownHandler);
 };
 
-const initBigPicture = () => {
-  commentsLoader.addEventListener('click', () => {
-    const count = renderedCommentsNumber + COMMENTS_STEP;
-    const newPartComments = sourceComments.slice(0, count);
-    renderPictureComments(newPartComments, commentsContainer, commentTemplate);
-    renderedCommentsNumber = renderedCommentsNumber + COMMENTS_STEP;
-    commentsCount.innerHTML = `${newPartComments.length} из <span class="comments-count">${sourceComments.length}</span> комментариев`;
-    if (
-      sourceComments.length <= COMMENTS_STEP
-      || renderedCommentsNumber === sourceComments.length
-      || newPartComments.length >= sourceComments.length
-    ) {
-      commentsLoader.classList.add('hidden');
-    }
-  });
+function bigPictureEscKeydownHandler (evt) {
+  if (isEscapeKey(evt)) {
+    evt.preventDefault();
+    bigPictureClickHandler();
+  }
+}
 
-  userModalCloseElement.addEventListener('click', () => {
-    bigPicture.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-  });
-
-  document.addEventListener('keydown', (evt) => {
-    if (isEscapeKey(evt)) {
-      evt.preventDefault();
-      bigPicture.classList.add('hidden');
-      document.body.classList.remove('modal-open');
-    }
-  });
-};
-
-export {showBigPicture, initBigPicture};
+export {showBigPicture};

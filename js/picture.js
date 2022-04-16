@@ -1,7 +1,7 @@
 import {showBigPicture} from './big-picture.js';
 
 const listPhotos = document.querySelector('.pictures');
-const photoTemplate = document.querySelector('#picture').content.querySelector('a');
+const photoTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
 const createPhotoElement = (photo) => {
   const photoElement = photoTemplate.cloneNode(true);
