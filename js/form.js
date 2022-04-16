@@ -1,18 +1,25 @@
-import {isEscapeKey} from './util.js';
+import {isEscapeKey, focused} from './util.js';
 import {scaleControlValue} from './scale.js';
 import {sendData} from './api.js';
-import {blockSubmitButton, unblockSubmitButton, successSubmit, errorSubmit} from './form-submit.js';
+import {blockSubmitButton, unblockSubmitButton, showFormMessage} from './form-submit.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadOverlay = uploadForm.querySelector('.img-upload__overlay');
 const uploadInput = uploadForm.querySelector('.img-upload__input');
 const uploadCancel = uploadForm.querySelector('.img-upload__cancel');
 const textHashtags = uploadForm.querySelector('.text__hashtags');
-const regular = /^#[A-Za-zА-Яа-яЕё0-9]{1,19}$/;
 const textDescription = uploadForm.querySelector('.text__description');
+const regular = /^#[A-Za-zА-Яа-яЕё0-9]{1,19}$/;
+
+const templateSuccess = document.querySelector('#success').content.querySelector('.success');
+const successMessage = templateSuccess.cloneNode(true);
+const successButton = successMessage.querySelector('.success__button');
+const templateError = document.querySelector('#error').content.querySelector('.error');
+const errorMessage = templateError.cloneNode(true);
+const errorButton = errorMessage.querySelector('error__button');
 
 const uploadFormEscKeydownHandler = (evt) => {
-  if (isEscapeKey(evt)) {
+  if (isEscapeKey(evt) && focused(textHashtags) && focused(textDescription)) {
     evt.preventDefault();
     uploadOverlay.classList.add('hidden');
     document.body.classList.remove('modal-open');
@@ -37,23 +44,27 @@ const closeUploadForm = () => {
 };
 
 const pristine = new Pristine(uploadForm, {
-  classTo: 'text', // Элемент, на который будут добавляться классы
-  errorClass: 'text--invalid', // Класс, обозначающий невалидное поле
-  successClass: 'text--valid', // Класс, обозначающий валидное поле
-  errorTextParent: 'text', // Элемент, куда будет выводиться текст с ошибкой
-  errorTextTag: 'div', // Тег, который будет обрамлять текст ошибки
-  errorTextClass: 'form__error' // Класс для элемента с текстом ошибки
+  classTo: 'text',
+  errorClass: 'text--invalid',
+  successClass: 'text--valid',
+  errorTextParent: 'text',
+  errorTextTag: 'div',
+  errorTextClass: 'form__error'
 });
 
 pristine.addValidator(textHashtags, () => {
   const hashtags = textHashtags.value.split(' ');
   return hashtags.length <= 5;
-}, 'Не более 5 хэш-тегов');
+}, 'Не более 5 хэш-тегов', 1, true);
 
 pristine.addValidator(textHashtags, () => {
+  if (textHashtags.value === '') {
+    return true;
+  }
+
   const hashtags = textHashtags.value.split(' ');
   return !hashtags.some((hashtag) => !hashtag || !regular.test(hashtag));
-}, 'Некорректный хэш-тег');
+}, 'Некорректный хэш-тег', 2, true);
 
 pristine.addValidator(textHashtags, () => {
   const hashtags = textHashtags.value.split(' ');
@@ -65,9 +76,9 @@ pristine.addValidator(textHashtags, () => {
     }
   }
   return true;
-}, 'Хэш-теги не должны повторяться');
+}, 'Хэш-теги не должны повторяться', 3, true);
 
-pristine.addValidator(textDescription, () => textDescription.value.length <= 140, 'Не более 140 символов');
+pristine.addValidator(textDescription, () => textDescription.value.length <= 140, 'Не более 140 символов', 1, true);
 
 const setUserFormSubmit = (onSuccess) => {
   uploadForm.addEventListener('submit', (evt) => {
@@ -80,12 +91,12 @@ const setUserFormSubmit = (onSuccess) => {
         () => {
           onSuccess();
           unblockSubmitButton();
-          successSubmit();
+          showFormMessage(templateSuccess, successButton, '.success',);
         },
         () => {
           closeUploadForm();
           unblockSubmitButton();
-          errorSubmit();
+          showFormMessage(templateError, errorButton, '.error',);
         },
         new FormData(evt.target),
       );

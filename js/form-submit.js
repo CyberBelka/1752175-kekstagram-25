@@ -1,12 +1,6 @@
 import {isEscapeKey} from './util.js';
 
 const submitButton = document.querySelector('.img-upload__submit');
-const templateSuccess = document.querySelector('#success').content.querySelector('.success');
-const successMessage = templateSuccess.cloneNode(true);
-const successButton = successMessage.querySelector('button');
-const templateError = document.querySelector('#error').content.querySelector('.error');
-const errorMessage = templateError.cloneNode(true);
-const errorButton = errorMessage.querySelector('button');
 
 const blockSubmitButton = () => {
   submitButton.disabled = true;
@@ -18,48 +12,28 @@ const unblockSubmitButton = () => {
   submitButton.textContent = 'Опубликовать';
 };
 
-const successSubmit = () => {
-  document.body.append(successMessage);
+const showFormMessage = (overlay, messageButton, typeMessage) => {
+  document.body.appendChild(overlay);
+  const message = document.querySelector(typeMessage);
 
-  successButton.addEventListener('click', () => {
-    successMessage.remove();
-  });
+  const closeFormMessage = () => {
+    document.body.removeChild(overlay);
 
-  document.addEventListener('keydown', (evt) => {
+    document.removeEventListener('keydown', successMessageEscKeydownHandler);
+    messageButton.removeEventListener('click', closeFormMessage);
+    message.removeEventListener('click', closeFormMessage);
+  };
+
+  function successMessageEscKeydownHandler (evt) {
     if (isEscapeKey(evt)) {
-      successMessage.remove();
+      evt.preventDefault();
+      closeFormMessage();
     }
-  });
+  }
 
-  document.addEventListener('click', (evt) => {
-    const inner = successMessage.querySelector('.success__inner');
-    const click = evt.composedPath().includes(inner);
-    if (!click) {
-      successMessage.remove();
-    }
-  });
+  document.addEventListener('keydown', successMessageEscKeydownHandler);
+  message.addEventListener('click', closeFormMessage);
+
 };
 
-const errorSubmit = () => {
-  document.body.append(errorMessage);
-
-  errorButton.addEventListener('click', () => {
-    errorMessage.remove();
-  });
-
-  document.addEventListener('keydown', (evt) => {
-    if (isEscapeKey(evt)) {
-      errorMessage.remove();
-    }
-  });
-
-  document.addEventListener('click', (evt) => {
-    const inner = errorMessage.querySelector('.error__inner');
-    const click = evt.composedPath().includes(inner);
-    if (!click) {
-      errorMessage.remove();
-    }
-  });
-};
-
-export {blockSubmitButton, unblockSubmitButton, successSubmit, errorSubmit};
+export {blockSubmitButton, unblockSubmitButton, showFormMessage};
