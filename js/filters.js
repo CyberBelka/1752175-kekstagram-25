@@ -1,6 +1,7 @@
 import {debounce} from './util.js';
 
 const RERENDER_DELAY = 500;
+const AMOUNT_RANDOM = 10;
 
 const defaultFilterButton = document.querySelector('#filter-default');
 const randomFilterButton = document.querySelector('#filter-random');
@@ -20,20 +21,32 @@ const setActiveButton = (activeButton) => {
   activeButton.classList.add('img-filters__button--active');
 };
 
+const shuffleArray = (array) => {
+  for (let j = array.length - 1; j > 0; j--) {
+    const randomIndex = Math.floor(Math.random() * (j + 1));
+    const temporaryValue = array[randomIndex];
+    array[randomIndex] = array [j];
+    array[j] = temporaryValue;
+  }
+  return array;
+};
+
 const initFilters = () => {
   const photoContainer = document.querySelector('.pictures');
-  const photosList = Array.from(document.querySelectorAll('.picture'));
+  const pictures = Array.from(document.querySelectorAll('.picture'));
 
   const removePhotos = () => {
-    photosList.forEach((photo) => {
+    pictures.forEach((photo) => {
       photo.remove();
     });
   };
 
   const addPhotos = (photos) => {
+    const fragment = document.createDocumentFragment();
     photos.forEach((photo) => {
-      photoContainer.append(photo);
+      fragment.append(photo);
     });
+    photoContainer.append(fragment);
   };
 
   const debounceAddPhotos = debounce(addPhotos, RERENDER_DELAY);
@@ -50,20 +63,21 @@ const initFilters = () => {
   defaultFilterButton.addEventListener('click', (evt) => {
     setActiveButton(evt.target);
     removePhotos();
-    debounceAddPhotos(photosList);
+    debounceAddPhotos(pictures);
   });
 
   randomFilterButton.addEventListener('click', (evt) => {
     setActiveButton(evt.target);
     removePhotos();
-    const getRandomPhotos = photosList.slice().sort(() => Math.random() - 0.5).slice(0, 10);
-    debounceAddPhotos(getRandomPhotos);
+    const copyPhotos = pictures.slice();
+    const randomPhotos = shuffleArray(copyPhotos).slice(0, AMOUNT_RANDOM);
+    debounceAddPhotos(randomPhotos);
   });
 
   discussedFilterButton.addEventListener('click', (evt) => {
     setActiveButton(evt.target);
     removePhotos();
-    const discussedPhotos = photosList.slice().sort(compareComments);
+    const discussedPhotos = pictures.slice().sort(compareComments);
     debounceAddPhotos(discussedPhotos);
   });
 };

@@ -14,7 +14,7 @@ const switchSlider = () => {
   }
 };
 
-const changeEffect = (evt) => {
+const imgClickHandler = (evt) => {
   imgUploadPreview.classList.remove(`effects__preview--${currentEffect}`);
   currentEffect = evt.target.value;
   imgUploadPreview.classList.add(`effects__preview--${currentEffect}`);
@@ -76,7 +76,7 @@ const initSlider = () => {
     connect: 'lower',
   });
 
-  imgUploadEffects.addEventListener('click', changeEffect);
+  imgUploadEffects.addEventListener('click', imgClickHandler);
   slider.noUiSlider.on('update', () => {
     effectLevel.value = slider.noUiSlider.get();
     switch (currentEffect) {
@@ -106,4 +106,4 @@ const initSlider = () => {
   switchSlider();
 };
 
-export {initSlider};
+export {sliderContainer, imgUploadPreview, initSlider};

@@ -1,7 +1,8 @@
-import {isEscapeKey, focused} from './util.js';
-import {scaleControlValue} from './scale.js';
+import {isEscapeKey, focus} from './util.js';
+import {uploadPreview, scaleControlValue} from './scale.js';
 import {sendData} from './api.js';
 import {blockSubmitButton, unblockSubmitButton, showFormMessage} from './form-submit.js';
+import {sliderContainer, imgUploadPreview} from './effects.js';
 
 const uploadForm = document.querySelector('.img-upload__form');
 const uploadOverlay = uploadForm.querySelector('.img-upload__overlay');
@@ -18,19 +19,20 @@ const templateError = document.querySelector('#error').content.querySelector('.e
 const errorMessage = templateError.cloneNode(true);
 const errorButton = errorMessage.querySelector('error__button');
 
-const uploadFormEscKeydownHandler = (evt) => {
-  if (isEscapeKey(evt) && focused(textHashtags) && focused(textDescription)) {
-    evt.preventDefault();
-    uploadOverlay.classList.add('hidden');
-    document.body.classList.remove('modal-open');
-    uploadForm.reset();
-  }
-};
+const pristine = new Pristine(uploadForm, {
+  classTo: 'check',
+  errorClass: 'check--invalid',
+  successClass: 'check--valid',
+  errorTextParent: 'check',
+  errorTextTag: 'div',
+  errorTextClass: 'form__error'
+});
 
 const openUploadForm = () => {
   uploadOverlay.classList.remove('hidden');
   document.body.classList.add('modal-open');
   scaleControlValue.value = '100%';
+  imgUploadPreview.style.filter = 'none';
 
   document.addEventListener('keydown', uploadFormEscKeydownHandler);
 };
@@ -39,23 +41,25 @@ const closeUploadForm = () => {
   uploadOverlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
   uploadForm.reset();
+  pristine.reset();
+  uploadPreview.style.transform = `scale(${1})`;
+  imgUploadPreview.removeAttribute('class');
+  sliderContainer.classList.add('hidden');
 
   document.removeEventListener('keydown', uploadFormEscKeydownHandler);
 };
 
-const pristine = new Pristine(uploadForm, {
-  classTo: 'text',
-  errorClass: 'text--invalid',
-  successClass: 'text--valid',
-  errorTextParent: 'text',
-  errorTextTag: 'div',
-  errorTextClass: 'form__error'
-});
+function uploadFormEscKeydownHandler (evt) {
+  if (isEscapeKey(evt) && focus(textHashtags) && focus(textDescription)) {
+    evt.preventDefault();
+    closeUploadForm();
+  }
+}
 
 pristine.addValidator(textHashtags, () => {
   const hashtags = textHashtags.value.split(' ');
   return hashtags.length <= 5;
-}, 'Не более 5 хэш-тегов', 1, true);
+}, 'Не более 5 хэш-тегов', 3, true);
 
 pristine.addValidator(textHashtags, () => {
   if (textHashtags.value === '') {
@@ -64,19 +68,13 @@ pristine.addValidator(textHashtags, () => {
 
   const hashtags = textHashtags.value.split(' ');
   return !hashtags.some((hashtag) => !hashtag || !regular.test(hashtag));
-}, 'Некорректный хэш-тег', 2, true);
+}, 'Некорректный хэш-тег', 1, true);
 
 pristine.addValidator(textHashtags, () => {
-  const hashtags = textHashtags.value.split(' ');
-  for (let i = 0; i < hashtags.length; i++) {
-    for (let j = i + 1; j < hashtags.length; j++) {
-      if (hashtags[i].toLowerCase() === hashtags[j].toLowerCase() && hashtags[i] !== '') {
-        return false;
-      }
-    }
-  }
-  return true;
-}, 'Хэш-теги не должны повторяться', 3, true);
+  const hashtags = textHashtags.value.toLowerCase().split(' ');
+  const hashtagsSet = new Set(hashtags);
+  return hashtags.length === hashtagsSet.size;
+}, 'Хэш-теги не должны повторяться', 2, true);
 
 pristine.addValidator(textDescription, () => textDescription.value.length <= 140, 'Не более 140 символов', 1, true);
 
@@ -91,12 +89,12 @@ const setUserFormSubmit = (onSuccess) => {
         () => {
           onSuccess();
           unblockSubmitButton();
-          showFormMessage(templateSuccess, successButton, '.success',);
+          showFormMessage(templateSuccess, successButton, '.success');
         },
         () => {
           closeUploadForm();
           unblockSubmitButton();
-          showFormMessage(templateError, errorButton, '.error',);
+          showFormMessage(templateError, errorButton, '.error');
         },
         new FormData(evt.target),
       );

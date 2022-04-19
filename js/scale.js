@@ -3,11 +3,11 @@ const SCALE_STEP = 25;
 const scaleControlSmaller = document.querySelector('.scale__control--smaller');
 const scaleControlBigger = document.querySelector('.scale__control--bigger');
 const scaleControlValue = document.querySelector('.scale__control--value');
-const imgUploadPreview = document.querySelector('.img-upload__preview');
+const uploadPreview = document.querySelector('.img-upload__preview');
 
 const setScale = (value) => {
   const scale = parseInt(value, 10) / 100;
-  imgUploadPreview.style.transform = `scale(${scale})`;
+  uploadPreview.style.transform = `scale(${scale})`;
 };
 
 const buttonSmallerClickHandler = () => {
@@ -31,4 +31,4 @@ const initScale = () => {
   scaleControlBigger.addEventListener('click', buttonBiggerClickHandler);
 };
 
-export {scaleControlValue, initScale};
+export {uploadPreview, scaleControlValue, initScale};
