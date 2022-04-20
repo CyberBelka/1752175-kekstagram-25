@@ -1,4 +1,4 @@
-import {isEscapeKey, focus} from './util.js';
+import {isEscapeKey, isFocused} from './util.js';
 import {uploadPreview, scaleControlValue} from './scale.js';
 import {sendData} from './api.js';
 import {blockSubmitButton, unblockSubmitButton, showFormMessage} from './form-submit.js';
@@ -17,7 +17,7 @@ const successMessage = templateSuccess.cloneNode(true);
 const successButton = successMessage.querySelector('.success__button');
 const templateError = document.querySelector('#error').content.querySelector('.error');
 const errorMessage = templateError.cloneNode(true);
-const errorButton = errorMessage.querySelector('error__button');
+const errorButton = errorMessage.querySelector('.error__button');
 
 const pristine = new Pristine(uploadForm, {
   classTo: 'check',
@@ -50,7 +50,7 @@ const closeUploadForm = () => {
 };
 
 function uploadFormEscKeydownHandler (evt) {
-  if (isEscapeKey(evt) && focus(textHashtags) && focus(textDescription)) {
+  if (isEscapeKey(evt) && isFocused(textHashtags) && isFocused(textDescription)) {
     evt.preventDefault();
     closeUploadForm();
   }

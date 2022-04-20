@@ -31,6 +31,6 @@ function debounce (callback, timeoutDelay) {
   };
 }
 
-const focus = (element) => element !== document.activeElement;
+const isFocused = (element) => element !== document.activeElement;
 
-export {isEscapeKey, showAlert, debounce, focus};
+export {isEscapeKey, showAlert, debounce, isFocused};
