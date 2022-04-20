@@ -19,21 +19,23 @@ const showFormMessage = (overlay, messageButton, typeMessage) => {
   const closeFormMessage = () => {
     document.body.removeChild(overlay);
 
-    document.removeEventListener('keydown', successMessageEscKeydownHandler);
-    messageButton.removeEventListener('click', closeFormMessage);
-    message.removeEventListener('click', closeFormMessage);
+    document.removeEventListener('keydown', messageEscKeydownHandler);
+    message.removeEventListener('click', messageClickHandler);
   };
 
-  function successMessageEscKeydownHandler (evt) {
+  function messageClickHandler () {
+    closeFormMessage();
+  }
+
+  function messageEscKeydownHandler (evt) {
     if (isEscapeKey(evt)) {
       evt.preventDefault();
       closeFormMessage();
     }
   }
 
-  document.addEventListener('keydown', successMessageEscKeydownHandler);
-  message.addEventListener('click', closeFormMessage);
-
+  document.addEventListener('keydown', messageEscKeydownHandler);
+  message.addEventListener('click', messageClickHandler);
 };
 
 export {blockSubmitButton, unblockSubmitButton, showFormMessage};

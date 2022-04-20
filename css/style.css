@@ -686,7 +686,6 @@ main {
   width: 450px;
 
   margin: 0 auto;
-  margin-bottom: 20px;
   padding: 5px 10px;
 
   font-family: "Open Sans", "Arial", sans-serif;
@@ -702,6 +701,7 @@ main {
 
   margin: 0 auto;
   padding: 15px 10px;
+  margin-top: 20px;
 
   font-family: "Open Sans", "Arial", sans-serif;
   font-weight: 400;
@@ -709,7 +709,6 @@ main {
 
   border-radius: 5px;
 }
-
 
 /**
  * Кнопка для отправки изображения
