@@ -56,8 +56,10 @@ function uploadFormEscKeydownHandler (evt) {
   }
 }
 
+const getHashtags = (string) => string.split(' ');
+
 pristine.addValidator(textHashtags, () => {
-  const hashtags = textHashtags.value.split(' ');
+  const hashtags = getHashtags(textHashtags.value);
   return hashtags.length <= 5;
 }, 'Не более 5 хэш-тегов', 3, true);
 
@@ -66,12 +68,13 @@ pristine.addValidator(textHashtags, () => {
     return true;
   }
 
-  const hashtags = textHashtags.value.split(' ');
+  const hashtags = getHashtags(textHashtags.value);
   return !hashtags.some((hashtag) => !hashtag || !regular.test(hashtag));
 }, 'Некорректный хэш-тег', 1, true);
 
 pristine.addValidator(textHashtags, () => {
-  const hashtags = textHashtags.value.toLowerCase().split(' ');
+  const hashtagsIdentity = textHashtags.value.toLowerCase();
+  const hashtags = getHashtags(hashtagsIdentity);
   const hashtagsSet = new Set(hashtags);
   return hashtags.length === hashtagsSet.size;
 }, 'Хэш-теги не должны повторяться', 2, true);
